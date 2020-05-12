@@ -4,6 +4,9 @@ param(
 [switch]$dryrun
 )
 
+
+Set-PSDebug -Off
+
 # ARE YOU ADMIN ?
 
 $currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
@@ -23,10 +26,6 @@ exit
 }
 
 
-# DEBUG ?
-
-if($debug) {Set-PSDebug -Trace 1}
-else {Set-PSDebug -Off}
 
 # Install Feature "Windows Server Backup" , if not installed 
 
@@ -36,6 +35,10 @@ Add-WindowsFeature Windows-Server-Backup
 
 }
 
+# DEBUG ?
+
+if($debug) {Set-PSDebug -Trace 1}
+else {Set-PSDebug -Off}
 
 
 
@@ -120,22 +123,59 @@ else { $cred_option="" }
 
 
 
+# DO BACKUP : Call wbadmin
+
+#write "wbadmin start backup -allCritical -systemstate $include -backuptarget:$target_full_path $cred_option"
+
+#if ( -not $dryrun ) {
+#wbadmin start backup -allCritical -systemstate $include -backuptarget:$target_full_path $cred_option -quiet
+#}
+#else {"DRYRUN: ...SKIPPED!"}
 
 
-write "wbadmin start backup -allCritical -systemstate $include -backuptarget:$target_full_path $cred_option"
 
-if ( -not $dryrun ) {
-wbadmin start backup -allCritical -systemstate $include -backuptarget:$target_full_path $cred_option -quiet
-}
-else {"DRYRUN: ...SKIPPED!"}
+# DO BACKUP : Call via PS
 
 $pol=New-WBPolicy 
-$wbtarget=New-WBBackupTarget -NetworkPath $target_full_path -Credential $cred 
-Add-WBBackupTarget -Policy $pol -Target $wbtarget 
 
+$wbtarget=New-WBBackupTarget -NetworkPath $target_full_path -Credential $cred 
+
+$pol
+"Target adding:"
+
+Add-WBBackupTarget -Policy $pol -Target $wbtarget 
+$pol
+
+"Target added"
+$pol
 
 Add-WBBareMetalRecovery -Policy $pol
+Add-WBSystemState -Policy $pol
+"Bare and Systate added:"
+$pol
 
+
+
+"VOLUMES"
+#$vols = Get-WBVolume -AllVolumes
+
+#Add-WBVolume -Policy $pol -Volume $vols
+
+
+Set-WBPerformanceConfiguration -OverallPerformanceSetting alwaysincremental
+
+Set-WBVssBackupOption -pol $pol -VssFullBackup
+
+Add-WBVolume -Policy $pol -Volume (Get-WBVolume -CriticalVolumes)            
+            
+#get-wbvolume -policy $pol
+"VOlumes added:"
+$pol
+
+#Start-WBBackup -Policy $pol
+
+#Add-WBVolume -Volume $vols -policy $pol
+#get-wbvolume -policy $pol
 if ( -not $dryrun ) {
 Start-WBBackup -Policy $pol
 }
