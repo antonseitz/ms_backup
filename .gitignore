@@ -6,3 +6,10 @@
 /mysql/**
 !/mysql/ms_backup_config_default.ps1
 !/mysql/mysql.ps1
+
+
+/tableau/**
+!/tableau/tableau.ps1
+!/tableau/tableau_config_default.ps1
+
+/tableau/local_backup/**
