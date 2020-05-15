@@ -140,20 +140,40 @@ $pol=New-WBPolicy
 
 $wbtarget=New-WBBackupTarget -NetworkPath $target_full_path -Credential $cred 
 
-$pol
+
 "Target adding:"
 
 Add-WBBackupTarget -Policy $pol -Target $wbtarget 
-$pol
+
 
 "Target added"
-$pol
+
+
+# FULL
+
+if($full_diff.trim() -eq "full"){
 
 Add-WBBareMetalRecovery -Policy $pol
 Add-WBSystemState -Policy $pol
-"Bare and Systate added:"
-$pol
+Add-WBVolume -Policy $pol -Volume (Get-WBVolume -CriticalVolumes)      
 
+"FULL: Bare and Systate added"
+
+}
+
+
+# DIFF
+
+if($full_diff.trim() -eq "diff"){
+
+
+Add-WBSystemState -Policy $pol
+Add-WBFileSpec -Policy $pol $diff_files_locations 
+
+"DIFF: Adding Folders: "
+$diff_files_locations 
+
+}
 
 
 "VOLUMES"
@@ -166,10 +186,11 @@ Set-WBPerformanceConfiguration -OverallPerformanceSetting alwaysincremental
 
 Set-WBVssBackupOption -pol $pol -VssFullBackup
 
-Add-WBVolume -Policy $pol -Volume (Get-WBVolume -CriticalVolumes)            
+      
             
 #get-wbvolume -policy $pol
-"VOlumes added:"
+"POlICY COMPLETE: "
+
 $pol
 
 #Start-WBBackup -Policy $pol
