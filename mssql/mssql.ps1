@@ -3,8 +3,14 @@ import-module sqlserver
 
 
 
-. $PSScriptRoot\mssql_config.ps1
+if( -not (test-path $PSScriptRoot\mssql_config.ps1)){
+write "MSSQL: Config  " +$PSScriptRoot\mssql_config.ps1  + " not here!"
+exit 
 
+}
+else {
+. $PSScriptRoot\mssql_config.ps1
+}
 if( -not (test-path $mssql_dump_folder)){
 write "Folder " +$mssql_dump_folder  + " not here! Creating it.."
 md $mssql_dump_folder
