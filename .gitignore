@@ -2,6 +2,7 @@
 !/config/ms_backup_config_default.ps1
 
 /logs/**
+!/logs/README
 
 /mysql/**
 !/mysql/ms_backup_config_default.ps1
