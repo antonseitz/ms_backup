@@ -44,20 +44,18 @@ Add-WindowsFeature Windows-Server-Backup
 
 
 
-# CONFIG 
-# read config file
+"MS_BACKUP CONFIG "
 
+if( -not (test-path $PSScriptRoot\tableau_config.ps1)){
+write "MS_BACKUP: Config  " +$PSScriptRoot\tableau_config.ps1  + " not here!"
+exit 
+
+}
+else {
 
 . $PSScriptRoot\config\ms_backup_config.ps1
 
-
-
-
-
-
-
-
-
+}
 
 
 # Stop Services
@@ -71,7 +69,7 @@ net stop $service
 
 
 
-# EXECUTE SUBTASKS
+" EXECUTE SUBTASKS"
 # i.e. Dump DBs
 
 if($subtasks_before_backup){
@@ -85,8 +83,9 @@ exit 1
 
 }
 elseif( -not $dryrun ) {
+"START Executing $subtask .."
 . $PSScriptRoot\$subtask\$subtask.ps1
-
+"STOP ...Executing $subtask"
 }else{
 "DRYRUN: $PSScriptRoot$subtask.ps1 SKIPPED"
 }
@@ -94,7 +93,7 @@ elseif( -not $dryrun ) {
 
 
 
-# TEST TARGET - PREPARE TARGET
+"TEST TARGET - PREPARE TARGET"
 
 $targetpath="MS_BACKUP\" + $env:computername + "\" +  $full_diff.trim()
 $target_full_path= $targetroot + "\" + $targetpath
@@ -116,7 +115,6 @@ Remove-PSDrive -name TEST
 
 
 
-
 if ($targetroot.startswith("\\")) {
 $cred_option="-user:" + $targetsmbuser + " -password:" + $targetsmbpass
 }
@@ -124,18 +122,8 @@ else { $cred_option="" }
 
 
 
-# DO BACKUP : Call wbadmin
 
-#write "wbadmin start backup -allCritical -systemstate $include -backuptarget:$target_full_path $cred_option"
-
-#if ( -not $dryrun ) {
-#wbadmin start backup -allCritical -systemstate $include -backuptarget:$target_full_path $cred_option -quiet
-#}
-#else {"DRYRUN: ...SKIPPED!"}
-
-
-
-# DO BACKUP : Call via PS
+"DO BACKUP : Call via PS"
 
 $pol=New-WBPolicy 
 
@@ -192,13 +180,15 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 #get-wbvolume -policy $pol
 "POlICY COMPLETE: "
 
-$pol
 
-#Start-WBBackup -Policy $pol
+
+
 
 #Add-WBVolume -Volume $vols -policy $pol
 #get-wbvolume -policy $pol
 if ( -not $dryrun ) {
+"Start WBJOB with these options:"
+$pol
 Start-WBBackup -Policy $pol
 }
 
