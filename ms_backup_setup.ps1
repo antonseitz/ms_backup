@@ -14,6 +14,15 @@ write-host("Usage: "  +  $MyInvocation.MyCommand.Name + " -full_diff full|diff "
 exit
 }
 
+# ARE YOU ADMIN ?
+
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if ( -not $currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator) ){
+write "YOU HAVE NO ADMIN RIGHTS: EXITING!"
+exit 1
+}
+
+
 
 # ist feature installed ?
 if ( -not (Get-WindowsFeature | where { $_.Name -eq "Windows-Server-Backup"  -and $_.installstate -eq "installed" })){
@@ -38,7 +47,13 @@ $pass=[Runtime.InteropServices.Marshal]::PtrToStringAuto(
 
 
 $A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command ""& {c:\ms_backup\ms_backup.ps1 $full_diff ; return $LASTEXITCODE  }""  2>&1 > c:\ms_backup\logs\ms_backup.$full_diff.log"
-$T = New-ScheduledTaskTrigger -Daily -At 9pm
+
+if( $full_diff -eq "diff" ) {
+$T = New-ScheduledTaskTrigger -Daily -At 7pm
+}
+if($full_diff -eq "full") {
+$T = New-ScheduledTaskTrigger -Weekly -DaysOfWeek Friday -At 9pm
+}
 #$P = New-ScheduledTaskPrincipal "domain|computer\backup" -logontype Password
 
 $S = New-ScheduledTaskSettingsSet -Compatibility Win8
