@@ -4,8 +4,14 @@
 /logs/*.log
 /logs/*.txt
 
+
+/mssql/**
+!/mssql/mssql_config_default.ps1
+!/mssql/mssql.ps1
+
+
 /mysql/**
-!/mysql/ms_backup_config_default.ps1
+!/mysql/mysql_config_default.ps1
 !/mysql/mysql.ps1
 
 
