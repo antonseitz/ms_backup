@@ -7,8 +7,10 @@ param(
 # DEBUG ?
 Set-PSDebug -off
 
-if($debug) {Set-PSDebug -Trace 1}
-else {Set-PSDebug -Off}
+if($debug) {Set-PSDebug -Trace 1
+"DEBUG: ON"}
+else {Set-PSDebug -Off;
+"DEBUG: OFF"}
 
 
 # ARE YOU ADMIN ?
@@ -34,7 +36,7 @@ exit
 # Install Feature "Windows Server Backup" , if not installed 
 
 if ( -not (Get-WindowsFeature | where { $_.Name -eq "Windows-Server-Backup"  -and $_.installstate -eq "installed" })){
-
+"INSTALLING WindowsFeature Windows-Server-Backup"
 Add-WindowsFeature Windows-Server-Backup
 
 }
