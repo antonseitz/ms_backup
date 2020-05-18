@@ -4,8 +4,12 @@ param(
 [switch]$dryrun
 )
 
+# DEBUG ?
+Set-PSDebug -off
 
-Set-PSDebug -Off
+if($debug) {Set-PSDebug -Trace 1}
+else {Set-PSDebug -Off}
+
 
 # ARE YOU ADMIN ?
 
@@ -34,11 +38,6 @@ if ( -not (Get-WindowsFeature | where { $_.Name -eq "Windows-Server-Backup"  -an
 Add-WindowsFeature Windows-Server-Backup
 
 }
-
-# DEBUG ?
-
-if($debug) {Set-PSDebug -Trace 1}
-else {Set-PSDebug -Off}
 
 
 
