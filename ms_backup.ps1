@@ -46,8 +46,8 @@ Add-WindowsFeature Windows-Server-Backup
 
 "MS_BACKUP CONFIG "
 
-if( -not (test-path $PSScriptRoot\tableau_config.ps1)){
-write "MS_BACKUP: Config  " +$PSScriptRoot\tableau_config.ps1  + " not here!"
+if( -not (test-path $PSScriptRoot\config\ms_backup_config.ps1)){
+write "MS_BACKUP: Config  " +$PSScriptRoot\config\ms_backup_config.ps1  + " not here!"
 exit 
 
 }

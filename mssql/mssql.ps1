@@ -42,7 +42,7 @@ write " Backing up whole instances "
 
 foreach ($instance in $whole_instances){
 
-
+"MSSQL DO Backup of " $instance
 $dbs=Get-ChildItem SQLSERVER:\SQL\$instance\Databases -force   | Where { $_.Name -ne 'tempdb' } 
 $full_dbs=Get-ChildItem SQLSERVER:\SQL\$instance\Databases -force |  where {$_.Recoverymodel -eq "FULL"}
 
@@ -51,11 +51,12 @@ $full_dbs=Get-ChildItem SQLSERVER:\SQL\$instance\Databases -force |  where {$_.R
 $dbs | Backup-SqlDatabase -backupaction database -backupcontainer $mssql_dump_folder -verbose
 
 
-
-}
-
 "MSSQL: Make T-LOG Backup"
 $full_dbs | Backup-SqlDatabase -backupaction log -backupcontainer $mssql_dump_folder -verbose
+
+}
+"MSSQL Backup of " $instance " done"
+
 
 
 
