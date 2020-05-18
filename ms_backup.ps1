@@ -44,13 +44,18 @@ Add-WindowsFeature Windows-Server-Backup
 
 
 
-# CONFIG 
-# read config file
+"MS_BACKUP CONFIG "
 
-"READING \ms_config\ms_backup_config.ps1"
+if( -not (test-path $PSScriptRoot\tableau_config.ps1)){
+write "MS_BACKUP: Config  " +$PSScriptRoot\tableau_config.ps1  + " not here!"
+exit 
+
+}
+else {
+
 . $PSScriptRoot\config\ms_backup_config.ps1
 
-
+}
 
 
 # Stop Services

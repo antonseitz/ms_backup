@@ -3,13 +3,22 @@
 ##############################################################
 
 
-# READ CONFIG 
+"TABLEAU: read config "
 
+
+
+if( -not (test-path $PSScriptRoot\tableau_config.ps1)){
+write "TABLEAU: Config  " +$PSScriptRoot\tableau_config.ps1  + " not here!"
+exit 
+
+}
+else {
+"TABLEAU: read config"
 . $PSScriptRoot\tableau_config.ps1
 
 
 if( -not (test-path $tableau_dump_folder)){
-write "Folder " +$tableau_dump_folder  + " not here! Creating it.."
+write "TABLEAU: Folder " +$tableau_dump_folder  + " not here! Creating it.."
 md $tableau_dump_folder
 
 }
