@@ -4,13 +4,13 @@ param(
 [switch]$dryrun
 )
 
-# DEBUG ?
-Set-PSDebug -off
-
-if($debug) {Set-PSDebug -Trace 1
-"DEBUG: ON"}
-else {Set-PSDebug -Off;
-"DEBUG: OFF"}
+if($dryrun){
+$script:dryrun = $true
+}
+Set-PSDebug -Off
+if( $debug ) {
+$script:debug=$true
+}
 
 
 # ARE YOU ADMIN ?
@@ -41,6 +41,15 @@ Add-WindowsFeature Windows-Server-Backup
 
 }
 
+
+
+# DEBUG ?
+
+
+if($debug) {Set-PSDebug -Trace 1
+"DEBUG: ON"}
+else {Set-PSDebug -Off
+"DEBUG: OFF"}
 
 
 
@@ -82,14 +91,13 @@ Write "SUBTASK: $PSScriptRoot$subtask\$subtask.ps1 not found ! EXITING!"
 exit 1
 
 }
-elseif( -not $dryrun ) {
+
 "START Executing $subtask .."
 . $PSScriptRoot\$subtask\$subtask.ps1
 "STOP ...Executing $subtask"
-}else{
-"DRYRUN: $PSScriptRoot$subtask.ps1 SKIPPED"
 }
-}}
+}
+
 
 
 
@@ -184,14 +192,13 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 
 
 
-#Add-WBVolume -Volume $vols -policy $pol
-#get-wbvolume -policy $pol
-if ( -not $dryrun ) {
 "Start WBJOB with these options:"
 $pol
+if ( -not $dryrun ) {
+
 Start-WBBackup -Policy $pol
 }
-
+else {"DRYRUN: skipped!"}
 
 
  # https://docs.microsoft.com/en-us/powershell/module/windowsserverbackup/?view=win10-ps
@@ -208,6 +215,24 @@ foreach ($service in $cold_services_to_stop){
 net start $service
 }
 }
+ 
+
+
+
+" ROTATE DUMPS"
+
+foreach ($rotate_dir in $rotate_dirs) {
+
+$dest= $rotate_dir + "\" +(get-date -format "yyyy_MM_dd__HH_mm")  
+"COPY last => date"
+copy-item $rotate_dir\last  -destination $dest -recurse
+"COPY done!"
+"DELETE date older than x days"
+Get-ChildItem $rotate_dir |Where-Object {((Get-Date) - $_.LastwriteTime).days -gt $script:rotationdiff_days}| Remove-Item -recurse
+"DELETE done"
+
+}
+
 
 
 
