@@ -25,8 +25,8 @@ Add-WindowsFeature Windows-Server-Backup
 
 
 
-write "Delete OLD ScheduledTask ?"
-$taskname= "MS_Backup_" + $full_diff +"_test"
+write "Delete OLD ScheduledTask "
+$taskname= "MS_Backup_" + $full_diff 
 UnRegister-ScheduledTask  $taskname
 
 $user=read-host "Username"
@@ -37,7 +37,7 @@ $pass=[Runtime.InteropServices.Marshal]::PtrToStringAuto(
     [Runtime.InteropServices.Marshal]::SecureStringToBSTR($pass))
 
 
-$A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command '& {c:\ms_backup\ms_backup.ps1 $full_diff ; return $LASTEXITCODE  }'  2>&1 > c:\ms_backup\logs\ms_backup.$full_diff.log"
+$A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command ""& {c:\ms_backup\ms_backup.ps1 $full_diff ; return $LASTEXITCODE  }""  2>&1 > c:\ms_backup\logs\ms_backup.$full_diff.log"
 $T = New-ScheduledTaskTrigger -Daily -At 9pm
 #$P = New-ScheduledTaskPrincipal "domain|computer\backup" -logontype Password
 

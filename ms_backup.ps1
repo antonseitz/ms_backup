@@ -78,16 +78,16 @@ if($subtasks_before_backup){
 foreach ($subtask in $subtasks_before_backup){
 
 
-if( -not (test-path .\$subtask\$subtask.ps1 )){
-Write "SUBTASK: $subtask\$subtask.ps1 not found ! EXITING!" 
+if( -not (test-path $PSScriptRoot\$subtask\$subtask.ps1 )){
+Write "SUBTASK: $PSScriptRoot$subtask\$subtask.ps1 not found ! EXITING!" 
 exit 1
 
 }
 elseif( -not $dryrun ) {
-. .\$subtask\$subtask.ps1
+. $PSScriptRoot\$subtask\$subtask.ps1
 
 }else{
-"DRYRUN: $subtask.ps1 SKIPPED"
+"DRYRUN: $PSScriptRoot$subtask.ps1 SKIPPED"
 }
 }}
 
