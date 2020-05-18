@@ -49,16 +49,16 @@ Write-Output "TSM Login " #*>> $logfile
 & $tabexe login --username $tableau_user --password $tableau_pwd #*>> $logfile
 
 Write-Output "TSM Export Settings " #*>> $logfile 
-& $tabexe settings export -f $tableau_bckp_local_target\tabbackup.settings.$($datum.dayofweek)_$($datum.hour).json  # *>> $logfile
+& $tabexe settings export -f $tableau_dump_folder\tabbackup.settings.$($datum.dayofweek)_$($datum.hour).json  # *>> $logfile
  
 Write-Output "TSM Backup Data " #*>> $logfile 
 $tsbak = "tabbackup.data." + $($datum.dayofweek) + "_" + $($datum.hour) + ".tsbak"
 & $tabexe maintenance backup -f $tsbak --override-disk-space-check #*>> $logfile
 
 # nach e: verschieben
-Write-Output "...nach E: verschieben... " #*>> $logfile 
+Write-Output "...nach tableau_dump_folder verschieben... " #*>> $logfile 
 $tsbackup = $env:TABLEAU_SERVER_DATA_DIR + "\data\tabsvc\files\backups\" + $tsbak
-move-item $tsbackup $tableau_bckp_local_target\$tsbak -force
+move-item $tsbackup $tableau_dump_folder\$tsbak -force
 Write-Output "...verschoben" #*>> $logfile 
 
 Write-Output "Tableau Backup beendet" #*>> $logfile 
