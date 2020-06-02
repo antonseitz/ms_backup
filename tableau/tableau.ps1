@@ -15,7 +15,7 @@ exit
 else {
 "TABLEAU: read config"
 . $PSScriptRoot\tableau_config.ps1
-
+}
 
 if( -not (test-path $tableau_dump_folder)){
 write "TABLEAU: Folder " +$tableau_dump_folder  + " not here! Creating it.."
