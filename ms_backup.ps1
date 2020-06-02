@@ -177,13 +177,13 @@ if($full_diff.trim() -eq "full"){
 
 if($full_diff.trim() -eq "diff"){
 	"`n	DO DIFF BACKUP"
-	if($diff_dirs){
+	if($diff_files_locations){
 	#	Add-WBSystemState -Policy $pol
-		$filespecs= new-wbfilespec -filespec $diff_dirs
+		$filespecs= new-wbfilespec -filespec $diff_files_locations
 		Add-WBFileSpec -Policy $pol $filespecs
 
 		"DIFF: Adding Folders: "
-		"	" + $diff_dirs 
+		"	" + $diff_files_locations 
 	}
 	else {
 		"No DIFF DIRS defined! EXITING!"
