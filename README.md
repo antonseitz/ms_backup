@@ -20,11 +20,8 @@ Backup User must be in local Admin-Group
 
 
 
-
-
-
-# wbadmin mit PS Starten/Configurireren ?
-# https://docs.microsoft.com/en-us/powershell/module/windowsserverbackup/?view=win10-ps
+wbadmin mit PS Starten/Configurireren ?
+https://docs.microsoft.com/en-us/powershell/module/windowsserverbackup/?view=win10-ps
 
 
 fullexclude
