@@ -68,7 +68,7 @@ $tsbak = "tabbackup.data." + $($datum.dayofweek) + "_" + $($datum.hour) + ".tsba
 Write-Output "...nach tableau_dump_folder verschieben... " #*>> $logfile 
 $tsbackup = $env:TABLEAU_SERVER_DATA_DIR + "\data\tabsvc\files\backups\" + $tsbak
 move-item $tsbackup $tableau_dump_folder\$tsbak -force
-Write-Output "...verschoben" #*>> $logfile 
+Write-Output "Nach "  + $tableau_dump_folder + "...verschoben" #*>> $logfile 
 
 Write-Output "Tableau Backup beendet" #*>> $logfile 
  
