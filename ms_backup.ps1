@@ -239,9 +239,10 @@ net start $service
 
 
 "---------------------"
-"`nROTATE DUMPS"
+"`n"
+"ROTATE DUMPS"
 
-foreach ($rotate_dir in $diff_dirs) {
+foreach ($rotate_dir in $diff_files_locations) {
 
 $dest= $rotate_dir + "\" +(get-date -format "yyyy_MM_dd__HH_mm")  
 	"`tMOVE \last => " + (get-date -format "yyyy_MM_dd__HH_mm")  
