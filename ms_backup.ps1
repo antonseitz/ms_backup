@@ -167,7 +167,8 @@ if($full_diff.trim() -eq "full"){
 	Add-WBBareMetalRecovery -Policy $pol
 	Add-WBSystemState -Policy $pol
 	Add-WBVolume -Policy $pol -Volume (Get-WBVolume -CriticalVolumes)      
-
+	$filespecs= new-wbfilespec -filespec $diff_files_locations
+		Add-WBFileSpec -Policy $pol $filespecs
 	"	FULL: Bare and System State added"
 
 }
