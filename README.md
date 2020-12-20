@@ -5,7 +5,10 @@
 setup:
 Run without User logged in
 
+# EXIT, if any actions fails
+$? oder $LASTEXITCODE ???
 
+RETURN EXITCODE TO SCHEDULER
 
 
 Requires:
