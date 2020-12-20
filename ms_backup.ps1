@@ -4,6 +4,12 @@ param(
 [switch]$dryrun
 )
 
+
+$starttime=get-date;
+$Wochentag=$starttime.DayOfWeek
+#$DatumTag=$starttime.tostring("hhmm")
+$datumuhrzeit=$starttime.tostring("yyyyMMdd_hhmm")
+
 if($dryrun){
 	$script:dryrun = $true
 }
@@ -114,6 +120,13 @@ if($subtasks_before_backup){
 "TEST AND PREPARE TARGET"
 
 $targetpath="MS_BACKUP\" + $env:computername + "\" +  $full_diff.trim()
+
+if( $full_diff.trim() -eq "diff" ) {
+
+$targetpath= $targetpath + "\" + $Wochentag
+
+}
+
 $target_full_path= $targetroot + "\" + $targetpath
 
 
@@ -243,16 +256,18 @@ net start $service
 "`n"
 "ROTATE DUMPS"
 
-foreach ($rotate_dir in $diff_files_locations) {
+foreach ($rotate_dir in $rotate_dirs) {
 
-$dest= $rotate_dir + "\" +(get-date -format "yyyy_MM_dd__HH_mm")  
-	"`tMOVE \last => " + (get-date -format "yyyy_MM_dd__HH_mm")  
+$dest= $rotate_dir.tostring() + "\" +$datumuhrzeit
+	"`tMOVE \last => " +  $datumuhrzeit
 move-item $rotate_dir\last  -destination $dest 
 	"`tMOVE done!"
-	"`tDELETE date older than $script:rotationdiff_days days"
-Get-ChildItem $rotate_dir |Where-Object {((Get-Date) - $_.LastwriteTime).days -gt $script:rotationdiff_days}| Remove-Item -recurse
-	"`tDELETE done"
 
+if ($rotationdiff_days){
+	"`tDELETE date older than $rotationdiff_days days "
+Get-ChildItem $rotate_dir |Where-Object {((Get-Date) - $_.LastwriteTime).days -gt $rotationdiff_days}| Remove-Item -recurse
+	"`tDELETE done"
+}
 }
 
 

@@ -17,22 +17,23 @@ else {
 . $PSScriptRoot\tableau_config.ps1
 }
 
-if( -not (test-path $tableau_dump_folder)){
+if( -not (test-path ( $tableau_dump_folder_last ))){
 write "TABLEAU: Folder " +$tableau_dump_folder  + " not here! Creating it.."
 md $tableau_dump_folder
+md $tableau_dump_folder\last
 
 }
 
 
-$datum=get-date;
+
 
 
 
 # Logfile mit gleichem Namen wie Script in gleichem Ordner ablegen:
 #$executingScriptDirectory = Split-Path -Path $MyInvocation.MyCommand.Definition -Parent
 #$logfile = $executingScriptDirectory + "\logs/" + $MyInvocation.MyCommand.Name + ".log.txt"
-write-output "###### >  START REPORT  BACKUP DAILY " #>> $logfile 
-Write-Output "$($datum.dayofweek) $($datum.hour)" #*>> $logfile 
+write-output "###### >  START TABLEAU  BACKUP  " #>> $logfile 
+Write-Output "$Wochentag $Uhrzeit" #*>> $logfile 
 
  
 
@@ -48,30 +49,50 @@ $tabexe = $tabpath + "\tsm.cmd"
 
 
 
-#& $tabexe backup c:\backup\tableau\tabbackup.$($datum.dayofweek)_$($datum.hour)  #*>> $logfile
 #if ( $LASTEXITCODE -gt 0 ) {
 #write $LASTEXITCODE
 #exit}
 
 Write-Output "TSM Login " #*>> $logfile 
+if ( -not $dryrun ) {
 
 & $tabexe login --username $tableau_user --password $tableau_pwd #*>> $logfile
 
+}else {
+"DRYRUN: skipped"
+}
+
 Write-Output "TSM Export Settings " #*>> $logfile 
-& $tabexe settings export -f $tableau_dump_folder\tabbackup.settings.$($datum.dayofweek)_$($datum.hour).json  # *>> $logfile
- 
+
+$tssettings = "tabbackup.settings." + $datumuhrzeit + ".json" 
+$tspath = $tableau_dump_folder_last + "\" + $tssettings
+if ( -not $dryrun ) {
+& $tabexe settings export -f $tspath # *>> $logfile
+ }
+ else{ "DRYRUN: skipped"}
+
+
+
 Write-Output "TSM Backup Data " #*>> $logfile 
-$tsbak = "tabbackup.data." + $($datum.dayofweek) + "_" + $($datum.hour) + ".tsbak"
+$tsbak = "tabbackup.data." + $datumuhrzeit + ".tsbak"
+if ( -not $dryrun ) {
+
 & $tabexe maintenance backup -f $tsbak --override-disk-space-check #*>> $logfile
+
+}
+ else{ "DRYRUN: skipped"}
 
 # nach e: verschieben
 Write-Output "...nach tableau_dump_folder verschieben... " #*>> $logfile 
 $tsbackup = $env:TABLEAU_SERVER_DATA_DIR + "\data\tabsvc\files\backups\" + $tsbak
-move-item $tsbackup $tableau_dump_folder\$tsbak -force
-Write-Output "Nach "  + $tableau_dump_folder + "...verschoben" #*>> $logfile 
+move-item $tsbackup $tableau_dump_folder_last\$tsbak -force
+Write-Output "Nach "  + $tableau_dump_folder_last + "...verschoben" #*>> $logfile 
 
 Write-Output "Tableau Backup beendet" #*>> $logfile 
  
- 
+ if ( -not $dryrun ) {
 
 & $tabexe logout
+}
+ else{ "DRYRUN: skipped"}
+
