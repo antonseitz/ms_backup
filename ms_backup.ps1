@@ -216,8 +216,8 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 "`t" + $pol
 if ( -not $dryrun ) {
 
-	Start-WBBackup -Policy $pol
-	"	EXITCODE: " + $LASTEXITCODE
+	$exit= Start-WBBackup -Policy $pol
+	"	EXITCODE: " + $LASTEXITCODE #+ $exit
 }
 else {"	DRYRUN: skipped!"}
 
