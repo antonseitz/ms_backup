@@ -62,7 +62,7 @@ $pass=read-host "Password" -AsSecureString # do not show password
 $pass=[Runtime.InteropServices.Marshal]::PtrToStringAuto(
     [Runtime.InteropServices.Marshal]::SecureStringToBSTR($pass))
 
-$arg= '-noninteractive -noLogo -noprofile -command "& {c:\ms_backup\ms_backup.ps1 ' + $full_diff  + '; return $LASTEXITCODE  }"  2>&1 > c:\ms_backup\logs\ms_backup.' + $full_diff + '.log'
+$arg= '-noninteractive -noLogo -noprofile -command "& {c:\ms_backup\ms_backup.ps1 ' + $full_diff  + '; return $LASTEXITCODE  }"  2>&1 >> c:\ms_backup\logs\ms_backup.' + $full_diff + '.log'
 $arg
 
 
