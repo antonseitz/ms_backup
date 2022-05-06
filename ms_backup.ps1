@@ -1,7 +1,8 @@
 param(
 [string]$full_diff ,
 [switch]$debug ,
-[switch]$dryrun
+[switch]$skip_dumps,
+[switch]$skip_backup
 )
 
 
@@ -10,8 +11,13 @@ $Wochentag=$starttime.DayOfWeek
 #$DatumTag=$starttime.tostring("hhmm")
 $datumuhrzeit=$starttime.tostring("yyyyMMdd_hhmm")
 
-if($dryrun){
-	$script:dryrun = $true
+if($skip_dumps){
+	$script:skip_dumps = $true
+}
+
+
+if($skip_backup){
+	$script:skip_backup = $true
 }
 Set-PSDebug -Off
 if( $debug ) {
@@ -30,9 +36,10 @@ exit 1
 # USAGE
 
 if (! $full_diff -or (($full_diff -ne "full") -and ($full_diff -ne "diff"))){ 
-	write-host("Usage: "  +  $MyInvocation.MyCommand.Name + " -full_diff full|diff [-debug] [-dryrun] ")
+	write-host("Usage: "  +  $MyInvocation.MyCommand.Name + " -full_diff full|diff [-debug] [-skip_dump | -skip_backup] ")
 	write "-debug = a lot of output"
-	write "-dryrun = without producing dumps and backup on target"
+	write "-skip_dumps = without producing dumps "
+	write "-skip_backup= without producing backup on target"
 
 	exit
 }
@@ -61,7 +68,7 @@ else {Set-PSDebug -Off
 	"DEBUG: OFF"
 }
 
-"DRYRUN: " + $dryrun
+
 	
 
 "MS_BACKUP CONFIG "
@@ -97,7 +104,7 @@ if ( -not ( $cold_services_to_stop -eq $null ) -and ($full_diff -eq "full")){
 " EXECUTE SUBTASKS"
 # i.e. Dump DBs
 
-if($subtasks_before_backup){
+if($subtasks_before_backup ){
 
 	foreach ($subtask in $subtasks_before_backup){
 
@@ -227,12 +234,12 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 
 "	Start WBJOB with these options:"
 "`t" + $pol
-if ( -not $dryrun ) {
+if ( -not $skip_backup ) {
 
 	$exit= Start-WBBackup -Policy $pol
 	"	EXITCODE: " + $LASTEXITCODE #+ $exit
 }
-else {"	DRYRUN: skipped!"}
+else {"	BACKUP: skipped!"}
 
 
  # https://docs.microsoft.com/en-us/powershell/module/windowsserverbackup/?view=win10-ps
