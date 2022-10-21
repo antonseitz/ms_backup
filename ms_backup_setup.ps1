@@ -5,12 +5,25 @@ Add-WindowsFeature Windows-Server-Backup
 
 }
 
-
-
 Set-PSDebug -off
 "
 ##### Create MS_Backup_Daily_Diff ####
 "
+
+
+
+$creds = Read-Host "Do you want to enter cred for your backup task  ? (y to confirm)" 
+if ($creds -eq "y" ) {
+	$user=read-host "Enter Username"
+
+$SecurePassword = $Password = Read-Host -AsSecureString "Password: "
+
+$Credentials = New-Object System.Management.Automation.PSCredential -ArgumentList $user, $SecurePassword
+
+# Das PWD wieder entschlüsseln, damit wir es plain verwednen können: 
+$Password = $Credentials.GetNetworkCredential().Password 
+
+}
 
 
 if (get-ScheduledTask  MS_Backup_Daily_Diff) {
@@ -18,29 +31,28 @@ if (get-ScheduledTask  MS_Backup_Daily_Diff) {
  OLD ScheduledTask found !
  "
 
-$choice = Read-Host "Delete OLD ScheduledTask (n to skip) ?"
+$del_diff = Read-Host "Delete OLD ScheduledTask  MS_Backup_Daily_Diff (y to confirm) ?"
 
-if ($choice -ne "n" ) {
+if ($del_diff -eq "y" ) {
+
 UnRegister-ScheduledTask  MS_Backup_Daily_Diff
 	
 }}
 
 $A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command '& {c:\ms_backup\ms_backup.ps1 diff ; return $LASTEXITCODE  }'  2>&1 > c:\ms_backup\ms_backup.diff.log"
 $T = New-ScheduledTaskTrigger -Daily -At 9pm
-
-$choice = Read-Host "Do you want to enter cred for backup task  ? (n to skip)" 
-if ($choice -ne "n" ) {
-	$user=read-host "Enter Username"
-$P = New-ScheduledTaskPrincipal -userid $user -logontype Password
-
-}
 $S = New-ScheduledTaskSettingsSet -Compatibility Win8
 
-if ($choice -ne "y" ) {
-$D = New-ScheduledTask -Action $A -Principal $P -Trigger $T -Settings $S
+$D = New-ScheduledTask -Action $A  -Trigger $T -Settings $S #}
+
+if ($creds -eq "y" ) {
+    $D | Register-ScheduledTask MS_Backup_Daily_Diff  -User $user -Password $password -taskpath "\Microsoft\Windows\Backup" 
 }
-$D = New-ScheduledTask -Action $A  -Trigger $T -Settings $S
-Register-ScheduledTask MS_Backup_Daily_Diff -InputObject $D -taskpath "\Microsoft\Windows\Backup" 
+else 
+    {
+    $D | Register-ScheduledTask MS_Backup_Daily_Diff    -taskpath "\Microsoft\Windows\Backup"  
+}
+
 
 
 "
@@ -51,9 +63,9 @@ if (get-ScheduledTask  MS_Backup_Weekly_Full) {
 " 
  OLD ScheduledTask found!
  "
-$choice = Read-Host "Delete OLD ScheduledTask (n to skip ) ?"
+$del_full = Read-Host "Delete OLD ScheduledTask MS_Backup_Weekly_Full (y to confirm) ?"
 
-if ($choice -ne "y" ) {
+if ( $del_full -eq "y" ) {
 	
 UnRegister-ScheduledTask  MS_Backup_Weekly_Full
 	
@@ -63,18 +75,23 @@ $A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractiv
 " 
 When should weekly full backup run? 0=sunday;6=saturday
 " 
-$T = New-ScheduledTaskTrigger -Weekly -At 10pm
 
-$choice = Read-Host "Do you want to enter cred for backup task  ? (n to skip )" 
-if ($choice -ne "y" ) {
-	$user=read-host "Enter Username"
-$P = New-ScheduledTaskPrincipal -userid $user -logontype Password
+$dayofweek = read-host  "Enter 0-6 for day of week: "
 
-}
+$T = New-ScheduledTaskTrigger -Weekly -At 10pm -DaysOfWeek $dayofweek
+
+
 $S = New-ScheduledTaskSettingsSet -Compatibility Win8
 
-if ($choice -ne "y" ) {
-$D = New-ScheduledTask -Action $A -Principal $P -Trigger $T -Settings $S
-}
-$D = New-ScheduledTask -Action $A  -Trigger $T -Settings $S
-Register-ScheduledTask MS_Backup_Weekly_Full -InputObject $D -taskpath "\Microsoft\Windows\Backup" 
+
+
+$D = New-ScheduledTask -Action $A  -Trigger $T -Settings $S 
+
+
+if ($creds -eq "y" ) { 
+    $D | Register-ScheduledTask MS_Backup_Weekly_Full  -User $user -Password $password -taskpath "\Microsoft\Windows\Backup" 
+
+    }
+    else {
+    $D | Register-ScheduledTask MS_Backup_Weekly_Full -taskpath "\Microsoft\Windows\Backup" 
+    }
