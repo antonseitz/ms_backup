@@ -7,6 +7,7 @@ param(
 
 
 $starttime=get-date;
+get-date -Format "yyyy-MM-dd__HH:mm:ss"
 $Wochentag=$starttime.DayOfWeek
 #$DatumTag=$starttime.tostring("hhmm")
 $datumuhrzeit=$starttime.tostring("yyyyMMdd_hhmm")
@@ -125,6 +126,8 @@ if($subtasks_before_backup ){
 
 "-------------------"
 "TEST AND PREPARE TARGET"
+get-date -Format "yyyy-MM-dd__HH:mm:ss"
+
 
 $targetpath="MS_BACKUP\" + $env:computername + "\" +  $full_diff.trim()
 
@@ -165,6 +168,8 @@ else {
 
 "-------------------"
 "CONFIGURE WB-BACKUP "
+get-date -Format "yyyy-MM-dd__HH:mm:ss"
+
 
 $pol=New-WBPolicy 
 
@@ -235,9 +240,10 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 "	Start WBJOB with these options:"
 "`t" + $pol
 if ( -not $skip_backup ) {
-
+	get-date -Format "yyyy-MM-dd__HH:mm:ss"
 	$exit= Start-WBBackup -Policy $pol
-	"	EXITCODE: " + $LASTEXITCODE #+ $exit
+	get-date -Format "yyyy-MM-dd__HH:mm:ss"
+	"	EXITCODE PS: " + $? + "; EXITCODE WIN: " + $LASTEXITCODE
 }
 else {"	BACKUP: skipped!"}
 
@@ -288,4 +294,5 @@ Get-ChildItem $rotate_dir |Where-Object {((Get-Date) - $_.LastwriteTime).days -g
 
 "----------------------------"
 "ENDED"
+get-date -Format "yyyy-MM-dd__HH:mm:ss"
 "----------------------------"

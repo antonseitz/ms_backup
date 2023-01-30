@@ -18,8 +18,9 @@ else {
 }
 
 if( -not (test-path ( $tableau_dump_folder_last ))){
-write "TABLEAU: Folder " +$tableau_dump_folder  + " not here! Creating it.."
-#md $tableau_dump_folder
+
+write ("TABLEAU: Folder " + $tableau_dump_folder + " not here! Creating it..")
+
 md $tableau_dump_folder\last
 
 }
