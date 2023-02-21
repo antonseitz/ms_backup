@@ -71,7 +71,7 @@ UnRegister-ScheduledTask  MS_Backup_Weekly_Full
 	
 }
 }
-$A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command '& {c:\ms_backup\ms_backup.ps1 full ; return $LASTEXITCODE  }'  2>&1 >> c:\ms_backup\logs\ms_backup.full.log"
+$A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command `"& {c:\ms_backup\ms_backup.ps1 full ; return $LASTEXITCODE  }`"  2>&1 >> c:\ms_backup\logs\ms_backup.full.log"
 
 
 

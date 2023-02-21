@@ -22,3 +22,4 @@ ms_backup.diff.log
 #/tableau/local_backup/*
 #!/tableau/local_backup/.gitkeep
 
+ms_backup.full.log
