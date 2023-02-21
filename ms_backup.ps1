@@ -242,8 +242,9 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 if ( -not $skip_backup ) {
 	get-date -Format "yyyy-MM-dd__HH:mm:ss"
 	$exit= Start-WBBackup -Policy $pol
-	get-date -Format "yyyy-MM-dd__HH:mm:ss"
+	
 	"	EXITCODE PS: " + $? + "; EXITCODE WIN: " + $LASTEXITCODE
+	get-date -Format "yyyy-MM-dd__HH:mm:ss"
 }
 else {"	BACKUP: skipped!"}
 
