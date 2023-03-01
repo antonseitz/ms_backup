@@ -39,7 +39,7 @@ UnRegister-ScheduledTask  MS_Backup_Daily_Diff
 	
 }}
 
-$A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command '& {c:\ms_backup\ms_backup.ps1 diff ; return $LASTEXITCODE  }'  2>&1 >> c:\ms_backup\logs\ms_backup.diff.log"
+$A = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-noninteractive -noLogo -noprofile -command `"& {c:\ms_backup\ms_backup.ps1 diff ; return $LASTEXITCODE  }`"  2>&1 >> c:\ms_backup\logs\ms_backup.diff.log"
 $T = New-ScheduledTaskTrigger -Daily -At 9pm
 $S = New-ScheduledTaskSettingsSet -Compatibility Win8
 
