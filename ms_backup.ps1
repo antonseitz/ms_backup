@@ -1,8 +1,9 @@
 param(
 [string]$full_diff ,
 [switch]$debug ,
-[switch]$skip_dumps,
-[switch]$skip_backup
+[switch]$skip_subtasks,
+[switch]$skip_backup,
+[switch]$dryrun
 )
 
 
@@ -105,7 +106,7 @@ if ( -not ( $cold_services_to_stop -eq $null ) -and ($full_diff -eq "full")){
 " EXECUTE SUBTASKS"
 # i.e. Dump DBs
 
-if($subtasks_before_backup ){
+if($subtasks_before_backup -and ($skip_subtasks -ne $true)){
 
 	foreach ($subtask in $subtasks_before_backup){
 
@@ -140,20 +141,29 @@ $targetpath= $targetpath + "\" + $Wochentag
 $target_full_path= $targetroot + "\" + $targetpath
 
 
+
+
+
+
+
+
 $password = ConvertTo-SecureString $targetsmbpass -AsPlainText -Force
 $cred = new-object System.Management.Automation.PSCredential ($targetsmbuser, $password)
-$test=New-PSDrive -name "TEST" -Root $targetroot -Credential $cred -PSProvider filesystem 
-if(-not $test){
-	write " ERROR while mounting SMB Share!"
-	exit
-}
-$testpath = "TEST:\" + $targetpath
-if( -not (test-path $testpath )){
-	write "Folder " +$targetpath  + " not here! Creating it.."
-	md $testpath
+#$test=New-PSDrive -name "TEST" -Root $targetroot  -PSProvider filesystem -Credential $cred
 
-}
-Remove-PSDrive -name TEST
+
+
+#if(-not $test){
+	#write " ERROR while mounting SMB Share!"
+	#exit
+#}
+#$testpath = "TEST:\" + $targetpath
+#if( -not (test-path $testpath )){
+	#write "Folder " +$targetpath  + " not here! Creating it.."
+	#md $testpath
+
+#}
+#Remove-PSDrive -name TEST
 
 
 
