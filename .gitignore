@@ -23,3 +23,5 @@ ms_backup.diff.log
 #!/tableau/local_backup/.gitkeep
 
 ms_backup.full.log
+del_tab_log.log
+tab_log_delete.log

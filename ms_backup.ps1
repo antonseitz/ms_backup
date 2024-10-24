@@ -11,7 +11,7 @@ $starttime=get-date;
 get-date -Format "yyyy-MM-dd__HH:mm:ss"
 $Wochentag=$starttime.DayOfWeek
 #$DatumTag=$starttime.tostring("hhmm")
-$datumuhrzeit=$starttime.tostring("yyyyMMdd_hhmm")
+$datumuhrzeit=$starttime.tostring("yyyyMMdd_HHmm")
 
 if($skip_dumps){
 	$script:skip_dumps = $true
@@ -56,7 +56,7 @@ if ( -not (Get-WindowsFeature | where { $_.Name -eq "Windows-Server-Backup"  -an
 
 }
 
-"----------"
+"---------- STEP 1 from 8 ------"
 "CONFIG: `n"
 
 
@@ -72,7 +72,7 @@ else {Set-PSDebug -Off
 
 
 	
-
+"---------- STEP 2 from 8 ------"
 "MS_BACKUP CONFIG "
 
 if( -not (test-path $PSScriptRoot\config\ms_backup_config.ps1)){
@@ -102,7 +102,7 @@ if ( -not ( $cold_services_to_stop -eq $null ) -and ($full_diff -eq "full")){
 
 
 
-"-------------------"
+"---------- STEP 3 from 8 ------"
 " EXECUTE SUBTASKS"
 # i.e. Dump DBs
 
@@ -125,7 +125,7 @@ if($subtasks_before_backup -and ($skip_subtasks -ne $true)){
 
 
 
-"-------------------"
+"---------- STEP 4 from 8 ------"
 "TEST AND PREPARE TARGET"
 get-date -Format "yyyy-MM-dd__HH:mm:ss"
 
@@ -158,9 +158,9 @@ $cred = new-object System.Management.Automation.PSCredential ($targetsmbuser, $p
 	#exit
 #}
 #$testpath = "TEST:\" + $targetpath
-#if( -not (test-path $testpath )){
-	#write "Folder " +$targetpath  + " not here! Creating it.."
-	#md $testpath
+#if( -not (test-path $target_full_path )){
+#	write "Folder " +$target_full_path  + " not here! Creating it.."
+#	md $target_full_path
 
 #}
 #Remove-PSDrive -name TEST
@@ -175,7 +175,7 @@ else {
 }
 
 
-
+"---------- STEP 5 from 8 ------"
 "-------------------"
 "CONFIGURE WB-BACKUP "
 get-date -Format "yyyy-MM-dd__HH:mm:ss"
@@ -195,7 +195,7 @@ Add-WBBackupTarget -Policy $pol -Target $wbtarget
 
 
 
-
+"---------- STEP 6 from 8 ------"
 if($full_diff.trim() -eq "full"){
 
 	"`n		DO FULL BACKUP"
@@ -245,7 +245,7 @@ Set-WBVssBackupOption -pol $pol -VssFullBackup
 
 
 
-
+"---------- STEP 7 from 8 ------"
 
 "	Start WBJOB with these options:"
 "`t" + $pol
@@ -275,7 +275,7 @@ net start $service
 }
  
 
-
+"---------- STEP 8 from 8  ------"
 "---------------------"
 "`n"
 "ROTATE DUMPS"
